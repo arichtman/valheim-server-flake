@@ -3,14 +3,21 @@
   stdenv,
   fetchSteam,
 }:
+let
+  gameInfoFilePath = builtins.fetchurl {
+    name = "valheim-manifest-id";
+    url = "https://api.steamcmd.net/v1/info/896660";
+  };
+  gameInfo = lib.importJSON gameInfoFilePath;
+in
 stdenv.mkDerivation (finalAttrs: {
   name = "valheim-server";
-  version = "0.220.5";
+  version = "unknown";
   src = fetchSteam {
     inherit (finalAttrs) name;
     appId = "896660";
     depotId = "896661";
-    manifestId = "18007466826975597";
+    manifestId = gameInfo.data."896660".depots."896661".manifests.public.download;
     hash = "sha256-8UdoLzKiu8CEztqwTHGP5M3RdrrVUTmAwN6Cqt9R+v8=";
   };
 
@@ -45,3 +52,4 @@ stdenv.mkDerivation (finalAttrs: {
     platforms = ["x86_64-linux"];
   };
 })
+
